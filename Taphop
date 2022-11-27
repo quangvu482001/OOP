@@ -1,0 +1,107 @@
+#include<iostream>
+using namespace std;
+class taphop
+{private: int *a; int n;
+public: taphop(int =0); taphop(const taphop&);
+int member(int); int tapcon(taphop); void themphantu(int); void loaiphantu(int);
+taphop operator +(taphop); taphop operator -(taphop); taphop operator *(taphop);
+int getn(); void setn(int); int *geta(); int getai(int); void setai(int,int);
+friend istream &operator >>(istream&, taphop&);
+friend ostream &operator <<(ostream&, taphop&); };
+class taphopnew: public taphop
+ {public: taphopnew(int=0); int max(); int min(); void loaiptam(); void loaiptduong();
+friend istream &operator>>(istream&, taphopnew&);
+friend ostream &operator<<(ostream&, taphopnew&); };
+taphop::taphop(int k) {if(k<=0)n=0; else n=k; a=new int[n];}
+taphop::taphop(const taphop &s){n=s.n; a=new int[n]; for(int i=0;i<n;i++) a[i]=s.a[i];}
+int taphop::member(int x) {int i=0; while(i<n)if(x==a[i]) break; else i++; return i;}
+int taphop::tapcon(taphop x) {int i=0, d=1; while(d&&(i<x.n))if(member(x.a[i]))i++; else d=0; return d;}
+void taphop::themphantu(int x) {if(member(x)==n)
+{taphop b(n+1); for(int i=0;i<n;i++) b.a[i]=a[i]; b.a[n]=x; delete []a; a=b.a; n++;}}
+void taphop::loaiphantu(int x) {int i,k=member(x);
+if(k<n){taphop b(n-1); for(i=0;i<k;i++) b.a[i]=a[i]; for(i=k;i<n-1;i++) b.a[i]=a[i+1]; delete []a; a=b.a; n--;}}
+taphop taphop::operator +(taphop x)
+{taphop b=*this; for(int i=0;i<x.n;i++) if(b.member(x.a[i])==b.n) b.themphantu(x.a[i]); return b;}
+taphop taphop::operator -(taphop x)
+{taphop b=*this; int i=0; while(i<b.n)if(x.member(b.a[i])<x.n) b.loaiphantu(b.a[i]);else i++; return b;}
+taphop taphop::operator *(taphop x)
+{taphop b=*this; int i=0; while(i<b.n)if(x.member(b.a[i])==x.n) b.loaiphantu(b.a[i]);else i++; return b;}
+int taphop::getn() {return n;}
+void taphop::setn(int x){n=x;a=new int[n];}
+int *taphop::geta(){return a;}
+int taphop::getai(int i){return a[i];}
+void taphop::setai(int i, int x) {a[i]=x;}
+taphopnew::taphopnew(int k):taphop(k){}
+int taphopnew::max() {int m=getai(0); for(int i=1;i<getn();i++) if(m<getai(i))m=getai(i); return m;}
+int taphopnew::min() {int m=getai(0); for(int i=1;i<getn();i++) if(m>getai(i))m=getai(i); return m;}
+void taphopnew::loaiptam() {int i=0; while(i<getn())if(getai(i)<0) loaiphantu(getai(i)); else i++;}
+void taphopnew::loaiptduong() {int i=0; while(i<getn())if(getai(i)>0) loaiphantu(getai(i)); else i++;}
+istream &operator >>(istream &Input, taphop &P)
+ {int m,x; cout<<"Nhap so pt="; Input>>m; taphop Q;
+for(int i=0;i<m;i++){cout<<"pt["<<i<<"]="; Input>>x;Q.themphantu(x);}P=Q; return Input;}
+ostream &operator <<(ostream &Out, taphop &P)
+{if(P.n)for(int i=0;i<P.n;i++)Out<<P.a[i]<<" "; else cout<<"Tap rong!"; return Out;}
+istream &operator >>(istream &Input, taphopnew &P)
+{int m,x; cout<<"Nhap so pt="; Input>>m; taphopnew Q;
+for(int i=0;i<m;i++){cout<<"pt["<<i<<"]="; Input>>x;Q.themphantu(x);}P=Q; return Input;}
+ostream &operator <<(ostream &Out, taphopnew &P)
+{if(P.getn()>0)for(int i=0;i<P.getn();i++)Out<<P.getai(i)<< " " ; else cout<<"Tap rong!"; return Out;}
+
+int main()
+{taphop a,b,c; int i,m,pt; cout<<"Nhap tap hop: "; cin>>a; cout<<"Tap hop a:"<<a<<endl;
+cin>>b; cout<<"Tap hop b:"<<b<<endl;
+if(a.tapcon(b)) cout<<"a la tap con cua b"; else cout<<"a khong la tap con cua b";
+c=a+b; cout<<"\nTap hop c=a+b:"<<c<<endl; c=a-b; cout<<"Tap hop c=a-b:"<<c<<endl;
+c=a*b; cout<<"Tap hop c=a*b."<<c<<endl;
+cout<<"Nhap phan tu them:"; cin>>pt; a.themphantu(pt); cout<<"Tap hop sau khi them: "<<a;
+cout<<"\nNhap phan tu loai:"; cin>>pt; a.loaiphantu(pt); cout<<"Tap hop sau khi loai:"<<a;
+taphopnew p; cout<<"\nNhap tap hop new: "; cin>>p; cout<<"Tap hop new p: "<<p<<endl;
+cout<<"Phan tu max: "<<p.max()<<endl; cout<<"Phan tu min: "<<p.min()<<endl;
+p.loaiptam(); cout<<"Tap hop sau khi loai pt am: "<<p<<endl;
+cin>>p; cout<<"Tap hop new p: "<<p<<endl;
+p.loaiptduong(); cout<<"Tap hop sau khi loai pt duong: "<<p<<endl;
+taphopnew A[20], B[20], C[20]; taphop A1[20], B1[20], C1[20];
+cout<<"Nhap so tap hop cua mang m="; cin>>m; cout<<"Nhap cac tap hop cua mang A:"<<endl;
+for(i=0;i<m;i++) {cout<<"Tap hop thu "<<i<<":"<<endl; cin>>A[i];}
+cout<<"Nhap cac tap hop cua mang B:"<<endl;
+for(i=0;i<m;i++) {cout<<"Tap hop thu "<<i<<":"<<endl; cin>>B[i];}
+cout<<"A:"<<endl; for(i=0;i<m;i++) cout<<A[i]<<endl;
+cout<<"B:"<<endl; for(i=0;i<m;i++) cout<<B[i]<<endl;
+for(i=0;i<m;i++){A1[i]=A[i]; B1[i]=B[i];} cout<<"C=A+B:"<<endl; for(i=0;i<m;i++) C1[i]=A1[i]+B1[i];
+cout<<"C:"<<endl; for(i=0;i<m;i++) cout<<C1[i]<<endl;
+cout<<"C=A-B:"<<endl; for(i=0;i<m;i++) C1[i]=A1[i]-B1[i];
+cout<<"C:"<<endl; for(i=0;i<m;i++) cout<<C1[i]<<endl;
+cout<<"C=A*B:"<<endl; for(i=0;i<m;i++) C1[i]=A1[i]*B1[i];
+cout<<"C:"<<endl; for(i=0;i<m;i++) cout<<C1[i]<<endl;
+pt=A[0].max(); for(i=1;i<m;i++)if(pt<A[i].max())pt=A[i].max();
+cout<<"Max trong mang A:"<<pt<<endl; pt=A[0].min(); for(i=1;i<m;i++)if(pt>A[i].min())pt=A[i].min();
+cout<<"Min trong mang A:"<<pt<<endl; pt=B[0].max(); for(i=1;i<m;i++)if(pt<B[i].max())pt=B[i].max();
+cout<<"Max trong mang B:"<<pt<<endl; pt=B[0].min(); for(i=1;i<m;i++)if(pt>B[i].min())pt=B[i].min();
+cout<<"Min trong mang B:"<<pt<<endl;
+return 0;}
+
+/*
+	Tao lop taphop: chua tap hop so nguyen
+		+ Thanh phan DL private: contro a chua cac so nguyen, n chua so phan tu cua tap hop
+		+ Ham thiet lap vs tham so mac dinh=0 tao tap hop
+		+ Ham thiet lap sao chep
+		+ Ham ktra phan tu cua tap hop
+		+ Ham ktra tap hop la tap con cua tap hop khac
+		+ Ham bo sung phan tu vao tap hop
+		+ Ham loai bo phan tu khoi tap hop
+		+ Ham chong toan tu + , - , *
+		+ Cac ham can thiet cho lop ke thua
+		+ Ham chong toan tu trich dong >>
+		+ Ham chong toan tu chen dong <<
+	Tao lop taphopnew ke thua lop taphop, co:
+		+ Ham tim ptu lon nhat
+		+ Ham tim ptu nho nhat
+		+ Ham loai bo cac ptu am 
+		+ Ham loai bo cac ptu duong
+		+ Ham chong toan tu trich dong >>
+		+ Ham chong toan tu chen dong <<
+	Ham main: Tao 2 mang A,B, moi mang co m tap hop
+		Tao mang C, bang cach cong, tru, nhan cac ptu tuong ung cua 2 mang A,B va in A,B,C
+		Tim, in ra ptu max,min trong tap hop mang A,B
+
+*/
