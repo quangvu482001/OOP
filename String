@@ -1,0 +1,159 @@
+#include<stdio.h>
+#include<iostream>
+#include<string.h>
+#include<stdlib.h>
+using namespace std;
+class String
+{
+	private:
+		char *s; int n;
+	public:
+		String(int k=0)
+		{
+			if(k<=0)n=0; else n=k;
+ 			s=new char[n+1]; s[n]='\n'; 
+		}
+		String(char *b)
+		{ n = strlen(b); s = new char[n + 1]; strcpy(s, b); }
+		String &operator=(const char *b)
+		{
+			delete []s; n= strlen(b); s = new char[n + 1];
+ 			strcpy(s, b);
+ 			return *this; 
+		}
+		int doixung()
+		{
+			int d=1;
+ 			for(int i=0;d&&(i<n/2);i++)if(s[i]-s[n-1-i])d=0;
+ 			return d; 
+		}
+		void inhoa()
+		{
+			for(int i=0;i<n;i++)
+ 			if((s[i]>='a')&&(s[i]<='z')) s[i]-=32; 
+		}
+		/*
+		void chen(int k, String b)
+		{if(k<0) k=0;
+		 else if(k>n) k=n;
+		 String a(n+b.n);
+		 int i;
+		 for(i=0;i<k;i++)a.s[i]=s[i];
+		 for(i=k;i<k+b.n;i++)a.s[i]=b.s[i-k];
+		 for(i=k+b.n;i<n+b.n;i++)a.s[i]=s[i-b.n];
+		s = new (n+b.n);
+		n=n+b.n;
+		 for(i=0;i<n;i++)s[i]=a.s[i];
+		 s[n]='\n';
+		}
+		*/
+		void inthuong()
+		{
+			for(int i=0;i<n;i++)
+ 			if((s[i]>='A')&&(s[i]<='Z')) s[i]+=32; 
+			 }
+		int getn()
+		{return n;}
+		char *gets() { return s;}
+		char getsi(int i) {return s[i];}
+		void setsi(int i, char a)
+		{s[i]=a;}
+		
+		friend istream &operator >>(istream &Input,String &P)
+   		{
+			char t[80]; cin.getline(t, 80, '\n'); String Q(t); P=Q;
+  			return Input; 
+		}
+		
+ 		friend ostream &operator <<(ostream &Out,String &P)
+ 		{ Out<<P.s;  return Out; }
+};
+class StringKT:public String
+{
+	public:
+ 		StringKT(int k=0):String(k) { }
+ 		StringKT(char *b):String(b){}
+ 		StringKT &operator + (StringKT b)
+		{
+			int i, m=getn() + b.getn() + 2;
+			StringKT p(m);
+			for(i=0; i<getn(); i++)  p.setsi(i,getsi(i));
+			p.setsi(getn(),' ');
+			for(i=0; i<=b.getn(); i++)  p.setsi(i+getn() + 1, b.getsi(i));
+			p.setsi(m,'\n');
+			return p; 
+		}
+		int doisangsonguyen()
+		{int n=atoi(gets()); return n; }
+		StringKT doisonguyensangxau(int n)
+		{
+			char s[100]; int k,d,t=0;
+			d=n%10; k=n/10;
+			s[t++]=d+'0';
+			while(k)
+			{ d=k%10; k=k/10;
+ 			s[t++]=d+'0';}
+			s[t]='\0';
+			for(d=0;d<t/2;d++)  {char c=s[d]; s[d]=s[t-1-d]; s[t-1-d]=c;}
+			StringKT a(s);
+			return a; 
+		}
+		int operator >(StringKT x)
+		{
+			int d=1,i=0,n1=getn(),n2=x.getn();
+			while((i<n1)&&(i<n2)&&d) if(getsi(i) == x.getsi(i)) i++; else d=0;
+			if(d) return (n1>n2); else return (getsi(i)>x.getsi(i)); 
+		}
+		friend istream &operator >>(istream &Input, StringKT &P)
+		{
+			char t[80]; cin.getline(t,80,'\n'); StringKT Q(t); P=Q;
+ 			return Input; 
+		}
+		friend ostream &operator <<(ostream &Out, StringKT &P)
+		{ Out<<P.gets(); return Out; }
+};
+int main()
+{
+	StringKT s; StringKT x;
+	cout<<"Nhap xau StringKT s="; cin>>s;
+	cout<<"Nhap xau StringKT x="; cin>>x;
+	cout<<"Tinh doi xung cua xau s: "<<s.doixung()<<endl;
+	cout<<"Tinh doi xung cua xau x: "<<x.doixung()<<endl;
+	cout<<"Xau s="<<s<<endl;
+	cout<<"Xau x="<<x<<endl;
+	if(s>x) cout<<"s>x"; 
+	else cout<<"s<x"<<endl;
+	cout<<"\nXau x sau khi doi thanh in hoa="; x.inhoa(); cout<<x;
+	cout<<"\nXau s sau khi doi thanh in hoa="; s.inhoa(); cout<<s;
+	cout<<"\nXau x sau khi doi thanh in thuong="; x.inthuong(); cout<<x;
+	cout<<"\nXau s sau khi doi thanh in thuong="; s.inthuong(); cout<<s;
+	cout<<"\nXau s + x ="; s=s+x; cout<<s<<endl;
+	fflush(stdin);
+	cout<<"Nhap xau doi sang so s="; cin>>s;
+	cout<<"Doi thanh so:"<<s.doisangsonguyen()<<endl;
+	int m, i, j;
+	cout<<"Nhap so doi sang xau m="; cin>>m;
+	x=s.doisonguyensangxau(m);
+cout<<"Doi thanh xau:"<<x<<endl;
+	StringKT A[10], B[10], C[20];
+	cout<<"Nhap co mang m="; cin>>m;
+	cout<<"Nhap mang A:"<<endl;
+	fflush(stdin);
+	for(i=0;i<m;i++) {cout<<"A["<<i<<"]="; cin>>A[i];}
+	cout<<"Nhap mang B:"<<endl;
+	for(i=0;i<m;i++) {cout<<"B["<<i<<"]="; cin>>B[i];}
+	for(i=0;i<m;i++) C[i]=A[i]+B[i];
+	cout<<"Mang A:"<<endl;
+	for(i=0;i<m;i++) cout<<A[i]<<endl;
+	cout<<"Mang B:"<<endl;
+	for(i=0;i<m;i++) cout<<B[i]<<endl;
+	cout<<"Mang C:"<<endl;
+	for(i=0;i<m;i++) cout<<C[i]<<endl;
+	for(i=0;i<m-1;i++)
+	for(j=i+1;j<m;j++)
+	if(C[i]>C[j]) {s=C[i]; C[i]=C[j]; C[j]=s;}
+	cout<<"Mang C sau sap xep:"<<endl;
+	cout<<"Mang C:"<<endl;
+	for(i=0;i<m;i++) cout<<C[i]<<endl;
+	return 0;
+}
