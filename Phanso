@@ -1,0 +1,104 @@
+#include<iostream>
+using namespace std;
+class phanso
+{   int tuso, mauso;
+	int usc(int a, int b) {int r=a%b; while(r>0) {a=b;b=r;r=a%b;} return b;}
+	public:
+		phanso(int a=0, int b=1) {tuso=a; mauso=b;}
+		void toigian()
+		{int t=tuso>0? tuso:-tuso; int m=mauso>0? mauso:-mauso;
+		int u=usc(t,m); tuso=tuso/u; mauso=mauso/u; if(mauso<0){mauso=-mauso; tuso=-tuso;}}
+		phanso operator+(phanso b)
+		{phanso c; c.tuso=tuso*b.mauso+mauso*b.tuso; c.mauso=mauso*b.mauso; return c;}
+		phanso operator-(phanso b)
+		{phanso c; c.tuso=tuso*b.mauso-mauso*b.tuso; c.mauso=mauso*b.mauso; return c;}
+		phanso operator*(phanso b)
+		{phanso c; c.tuso=tuso*b.tuso; c.mauso=mauso*b.mauso; return c;}
+		phanso operator/(phanso b)
+		{phanso c; c.tuso=tuso*b.mauso; c.mauso=mauso*b.tuso; return c;}
+		phanso operator>(phanso b)
+		{if (tuso*b.mauso-mauso*b.tuso>0) return 1; else return 0;}
+		int gettuso(){return tuso;}
+		int getmauso(){return mauso;}
+		void settuso(int a){tuso=a;}
+		void setmauso(int a){mauso=a;}
+		friend istream &operator>>(istream &Input, phanso &P)
+		{cout<<"Nhap tu so:"; Input>>P.tuso; cout<<"Nhap mau so:"; Input>>P.mauso; return Input;}
+		friend ostream &operator<<(ostream &Out, phanso &P)
+	    {P.toigian(); if(P.tuso) Out<<P.tuso<<"/"<<P.mauso; else Out<<0; return Out;}
+	};
+	class honso: phanso
+	{int nguyen;
+	public:
+		honso(int p=0, int q=0, int r=1): phanso(q,r){nguyen=p;}
+		honso(phanso a): phanso(a.gettuso(), a.getmauso()) {nguyen=0;}
+		void toigian()
+		{phanso::toigian(); int a=gettuso(); int b=getmauso();
+		if(b<0){a=-a;b=-b;} int n=a/b; nguyen+=n; a=a%b;
+		if(a*b<0) {nguyen--;a+=b;} settuso(a); setmauso(b);}
+		honso operator+(phanso x)
+		{phanso p(gettuso(),getmauso()); phanso m=p+x;
+		honso q(nguyen,m.gettuso(),m.getmauso()); q.toigian(); return q;}
+		int operator>(honso x)
+		{(*this).toigian(); x.toigian(); int a=gettuso(); int b=getmauso();
+		int c=x.gettuso(); int d=x.getmauso(); int t1=(nguyen*b+a), t2=(x.nguyen*d+c); return t1*d>t2*b;}
+		friend istream &operator>>(istream &Input, honso &P)
+		{int a;cout<<"Nhap phan nguyen:"; Input>>P.nguyen;
+		cout<<"Nhap tu so:"; Input>>a; P.settuso(a);
+		cout<<"Nhap mau so:"; Input>>a; P.setmauso(a); return Input;}
+		friend ostream &operator<<(ostream &Out, honso &P)
+		{P.toigian(); if((P.nguyen==0)&&(P.gettuso()==0)) Out<<0;
+		if(P.nguyen) Out<<"("<<P.nguyen<<")";
+		if(P.gettuso()) Out<<P.gettuso()<<"/"<<P.getmauso(); return Out;}
+	};
+	int main()
+	{phanso x,y,z; honso a,b,c; cout<<"Nhap phan so x:\n"; cin>>x;
+	cout<<"Nhap phan so y:\n"; cin>>y; cout<<"\nPhan so x:"<<x<<"\n Phan so y:"<<y;
+	z=x+y; cout<<"\nx+y="<<z;z=x-y; cout<<"\nx-y="<<z;
+	z=x*y; cout<<"\nx*y="<<z;z=x/y; cout<<"\nx/y="<<z;
+	cout<<"\nNhap hon so a:\n"; cin>>a; cout<<"Nhap hon so b:\n"; cin>>b;
+	cout<<"\nHon so a:"<<a<<"\nHon so b:"<<b<<endl;
+	if(a>b) cout<<a<<">"<<b; else cout<<a<<"<="<<b;
+	c=a+x; cout<<endl<<a<<"+"<<x<<"="<<c;
+	phanso A[20]; honso B[20], C[20]; int m,n,i;
+	cout<<"\nNhap so phan so m<="<<20<<", m="; cin>>m;
+	cout<<"Nhap cac phan so:\n";
+	for(i=0;i<m;i++){cout<<"phan so thu"<<i<<":"<<endl; cin>>A[i];}
+	cout<<"\nNhap so hon so n<="<<20<<", n="; cin>>n;
+	cout<<"Nhap cac hon so:\n";
+	for(i=0;i<n;i++){cout<<"hon so thu"<<i<<":"<<endl; cin>>B[i];}
+	if(m>n){ for(i=0;i<n;i++)C[i]=B[i]+A[i]; for(i=n;i<m;i++)C[i]=A[i];}
+	else{ for(i=0; i<m;i++) C[i]=B[i]+A[i]; for(i=m; i<n; i++)C[i]=B[i];}
+	cout<<"\nCac phan tu mang phan so:\n"; for(i=0;i<m;i++)cout<<A[i]<<" ";
+	cout<<"\nCac phan tu mang hon so:\n"; for(i=0;i<m;i++)cout<<B[i]<<" ";
+	cout<<"\nCac phan tu mang tong:\n"; m=m>n?m:n; for(i=0;i<m;i++)cout<<C[i]<<" ";
+	for(i=0;i<m-1;i++) for (int k=i+1;k<m;k++)
+	if(C[i]>C[k]){honso D=C[i]; C[i]=C[k]; C[k]=D;}
+	cout<<"Cac phan tu mang tong sau khi sap xep theo thu tu tang dan la :\n"; for(i=0; i<m;i++)cout<<C[i]<<" ";
+	return 0;
+}
+
+
+/*
+	Tao lop phan so, co:
+		+ Thanh phan DL private: tuso, mauso
+		+ Ham thiet lap vs cac tham so mac dinh, gan tuso=0, mauso=1
+		+ Ham toi gian phan so, yeu cau mauso luon duong
+		+ Cac ham can thiet cho lop ke thua
+		+ Ham chong toan tu+,-,*,/
+		+ Ham chong toan tu trich dong >>
+		+ Ham chong toan tu chen dong <<
+	Tao lop honso ke thua lop phan so, co:
+		+ Thanh phan DL private: nguyen la phan nguyen cua hon so
+		+ Ham toi gian hon so
+		+ Ham thiet lap vs cac tham so mac dinh, tuso=0,mauso=1,nguyen=0
+		+ Ham chong toan tu *
+		+ Ham chong toan tu >
+		+ Ham chong toan tu trich dong >>
+		+ Ham chong toan tu chen dong << 
+	Ham main:: tao mang A co n hon so, 1 hon so D
+		Mang B nhan tu mang A = cach nhan moi ptu A vs D.
+		Xuat A,B
+		Sap xep A tang dan, xuat A
+	
+*/
