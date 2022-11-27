@@ -1,0 +1,79 @@
+//----------------
+Tạo lớp D2 các điểm trên mặt phẳng tọa độ Oxy, bắt buộc phải có:
+	Thành phần dữ liệu private x và y là các tọa độ của điểm trên trục Ox và Oy
+	Hàm thiết lập với các tham số mặc định =0 gán cho các tọa độ
+	Hàm xác định khoảng cách từ điểm đến gốc tọa độ
+	Hàm tính độ dài đoạn thẳng nối 2 điểm trên mặt phẳng
+	Các hàm cần thiết cho lớp kế thừa
+	Hàm chồng toán tử trích dòng >> để nhập tọa độ của điểm từ bàn phím
+	Hàm chồng toán tử chèn dòng << để xuất tọa độ của điểm ra màn hình
+Tạo lớp D3 các điểm trong không gian tọa độ Oxyz kế thừa lớp D2, bắt buộc phải có :
+	Thành phần dữ liệu private z là tọa độ của điểm trên trục Oz
+	Hàm thiết lập với các tham số mặc định =0 gán cho các tọa độ
+	Hàm xác định khoảng cách từ điểm đến gốc tọa độ
+	Hàm tính độ dài đoạn thẳng nối 2 điểm trong không gian
+	Hàm chồng toán tử trích dòng >> để nhập tọa độ của điểm từ bàn phím
+	Hàm chồng toán tử chèn dòng << để xuất tọa độ của điểm ra màn hình
+Hàm main tạo các đối tượng thích hợp để thử nghiệm các hàm thành viên của mỗi lớp; tạo m điểm D2 và n điểm D3 với m, n và các tọa độ nhập từ bàn phím. Trong số m+n điểm đã cho tìm điểm cách xa gốc tọa độ nhất. Tìm 3 điểm tạo thành tam giác có diện tích lớn nhất.
+
+//----------------
+#include<math.h>
+#include<iostream>
+using namespace std;
+class D2
+{float x,y;
+public: 
+D2(float ox=0, float oy=0) {x=ox; y=oy;}
+float dodai(D2 a) {return sqrt((x-a.x)-(x-a.x)+(y-a.y)*(y-a.y));}
+float khoangcach() {return sqrt(x*x+y*y);}
+float getx() {return x;}
+float gety() {return y;}
+void setx(float a){x=a;}
+void sety(float a){y=a;}
+friend ostream &operator<<(ostream &Out, D2&P)
+{Out<<"Toa do x="<<P.x<<",Toa do y="<<P.y; return Out;}
+friend istream &operator>>(istream &Input, D2&P)
+{cout<<"Toa do x="; Input>>P.x; cout<<"Toa do y="; Input>>P.y; return Input;}};
+class D3: public D2
+{float z;
+public:
+	D3(float ox=0, float oy=0, float oz=0): D2(ox,oy){z=oz;}
+	float dodai(D3 a)
+	{return sqrt((getx()-a.getx())*(getx()-a.getx())+(gety()-a.gety())*(gety()-a.gety())+(z-a.z)*(z-a.z));}
+	float khoangcach()
+	{return sqrt(getx()*getx()+gety()*gety()+z*z);}
+	void setz(float a){z=a;}
+	friend istream &operator>>(istream &Input, D3 &P)
+	{float a,b; cout<<"Toa do x="; Input>>a; cout<<"Toa do y="; Input>>b;
+	P.setx(a); P.sety(b); cout<<"Toa do z="; Input>>P.z; return Input;}
+	friend ostream &operator<<(ostream &Out, D3 &P)
+	{D2 Q=P; Out<<Q<<", Toa do z="<<P.z; return Out;}
+};
+int main()
+{D2 A[20]; D3 B[40]; int m,n,i;
+cout<<"Nhap so diem D2 m="; cin>>m; cout<<"Nhap "<<m<<" diem D2:\n";
+for(i=0;i<m;i++){cout<<"A["<<i<<"]:";cin>>A[i];}
+cout<<"Nhap so diem D3 n="; cin>>n; cout<<"Nhap "<<m<<" diem D3:\n";
+for(i=0;i<n;i++){cout<<"B["<<i<<"]:";cin>>B[i];}
+cout<<"\nCac diem D2:"; for(i=0;i<m;i++)cout<<"\nA["<<i<<"]:"<<A[i];
+cout<<"\nCac diem D3:"; for(i=0;i<n;i++)cout<<"\nA["<<i<<"]:"<<B[i];
+for(i=n;i<m;i++) {B[i].setx(A[i-n].getx()); B[i].sety(A[i-n].gety()); B[i].setz(0);}
+cout<<"\nCac diem D3 gop:"; for(i=0; i<m+n;i++) cout<<"\nB["<<i<<"]:"<<B[i];
+float max=B[0].khoangcach(); int imax=0;
+for(i=1; i<m+n; i++){float x=B[i].khoangcach(); if(x>max){max=x; imax=i;}}
+cout<<"\nDiem co kc max="<<max<<"la diem:";
+if(max<n)cout<<"\nB["<<imax<<"]:"<<B[imax]; else cout<<"\nA["<<imax-n<<"]:"<<A[imax-n];
+float s,a,b,c; a=B[0].dodai(B[1]); b=B[0].dodai(B[2]); c=B[1].dodai(B[2]);
+s=(a+b+c)/2; max=sqrt(s*(s-a)*(s-b)*(s-c));
+int i1=0, i2=1, i3=2;
+for(i=0;i<m+n-2; i++)
+for(int j=i+1;j<m+n-1; j++)
+for(int k=j+1;k<m+n; k++)
+{a=B[i].dodai(B[j]); b=B[i].dodai(B[k]); c=B[j].dodai(B[k]);
+s=(a+b+c)/2; s=sqrt(s*(s-a)*(s-b)*(s-c));
+if(s>max){max=s; i1=i;i2=j;i3=k;}}
+cout<<"\n 3 diem tao tam giac dt max="<<max<<"la 3 diem:";
+if(i1<n) cout<<"\nB["<<i1<<"]:"<<B[i1]; else cout<<"\nA["<<i1-n<<"]:"<<A[i1-n];
+if(i2<n) cout<<"\nB["<<i2<<"]:"<<B[i2]; else cout<<"\nA["<<i2-n<<"]:"<<A[i2-n];
+if(i3<n) cout<<"\nB["<<i3<<"]:"<<B[i3]; else cout<<"\nA["<<i3-n<<"]:"<<A[i3-n];
+return 0;}
