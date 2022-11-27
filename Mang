@@ -1,0 +1,116 @@
+#include<iostream>
+using namespace std;
+class Mang
+{private:
+float*a; int n;
+
+public:
+Mang(int k=0)
+{if(k<=0)n=0; else n=k;
+a=new float[n];}
+
+Mang(const Mang &s)
+{n=s.n;
+a=new float[n];
+for(int i=0; i<n;i++) a[i]=s.a[i];}
+
+void sapxepgiam()
+{for(int i=0;i<n-1;i++)
+for(int j=i+1;j<n;j++)
+if(a[i]<a[j]) {float x=a[i]; a[i]=a[j]; a[j]=x;}
+}
+
+void daonguoc()
+{for(int i=0; i<n/2;i++)
+{float x=a[i]; a[i]=a[n-i-1]; a[n-i-1]=x;}}
+int getn() {return n;}
+
+void setn(int x) { n=x;a=new float[n];}
+float*geta(){return a;}
+float getai(int i) {return a[i];}
+void setai(int i, float x) {a[i]=x;}
+
+friend istream &operator>>(istream &Input, Mang &P)
+{ int m;cout<<"Nhap so pt="; Input>>m;
+P.setn(m);
+for(int i=0;i<P.n;i++)
+{cout<<"pt["<<i<<"]="; Input>>P.a[i];}
+return Input;}
+
+friend ostream &operator<<(ostream &Out, Mang &P)
+{for(int i=0; i<P.n;i++) Out<<P.a[i]<<" ";
+return Out;}
+};
+class MangKT: Mang {
+public:
+MangKT(int s=0): Mang(s){}
+MangKT operator +(MangKT mang2)
+{ int i,k,m,n1,n2;
+n1=getn();
+n2=mang2.getn();
+m=n1>n2?n1:n2;
+MangKT temp(m);
+k=n1<n2?n1:n2;
+for(i=0;i<k;i++)
+temp.setai(i,getai(i)+mang2.getai(i));
+if(n1>n2)for (i=k;i<m;i++)temp.setai(i,getai(i));
+else for(i=k;i<m;i++)temp.setai(i,mang2.getai(i));
+return temp;
+}
+void sapxepgiam(){
+this->MangKT::sapxepgiam();}
+void sapxeptang()
+{for(int i=0;i<getn()-1;i++)
+for(int j=i+1; j<getn();j++)
+if(getai(i)>getai(j))
+{int x=getai(i); setai(i,getai(j)); setai(j,x);}
+}
+friend istream &operator>>(istream &Input, MangKT &P)
+{ int m; float x;cout<<"Nhap so pt="; Input>>m;
+P.setn(m);
+for(int i=0;i<P.getn(); i++)
+{ cout<<"pt["<<i<<"]="; Input>>x; P.setai(i,x);}
+return Input;}
+friend ostream &operator<<(ostream &Out, MangKT &P)
+{for (int i=0; i<P.getn();i++) Out<<P.getai(i)<<" ";
+return Out;}
+};
+int main()
+{ Mang a;
+cin>>a;
+cout <<"Mang da nhap:"<<a<<endl;
+a.daonguoc();
+cout<<"Mang da dao:"<<a<<endl;
+a.sapxepgiam();
+cout<<"Mang da sap xep giam:"<<a<<endl;
+MangKT A,B;
+cin>>A;
+cout<<"MangKT A da nhap:"<<A<<endl;
+cin>>B;
+cout<<"MangKT B da nhap:"<<B<<endl;
+A=A+B;
+cout<<"A=A+B:"<<A<<endl;
+A.sapxeptang();
+cout<<"MangKT A sap xep tang:"<<A<<endl;
+B.sapxepgiam();
+cout<<"mangKT B sap xep giam:"<<B<<endl;
+return 0;
+}
+
+/*
+	Tao lop Mang:
+		+ Thanh phan DL private: contro a luu truc cac ptu, n chi kich thuoc mang
+		+ Ham thiet lap co tham so mac dinh= 0,xd kich thuoc mang va cap bo nho cho mang
+		+ Ham thiet lap sao chep
+		+ Ham dao cac phan tu cua mang
+		+ Ham can thiet cho lop ke thua
+	Tao lop MangKT:
+		+ Ham chong toan tu +
+		Ham sap xep lai mang sao cho cac ptu am chuyen len dau,ko am chuyen xuong
+		+ Ham chong toan tu trich dong >>
+		+ Ham chong toan tu chen dong <<
+	Ham main:
+		+ tao 2 doi tuong MangKT A,B
+		+ Nhap,xuat, in A,B
+		+ Xuat A,B va A+B sau khi sap xep
+*/
