@@ -1,0 +1,144 @@
+#include<iostream>
+using namespace std;
+int ngaytrongthang[13]={0,31,28,31,30,31,30,31,31,30,31,30,31};
+char tenthang[12][12]={"January", "February","March","April","May","June", "July", "August", "September", "October", "November", "December"};
+char tenthu[7][10]={"Saturday","Sunday","Monday","Tuesday","Wednesday", "Thursday","Friday"};
+class Date
+{
+private: int d, m, y;
+public:
+Date(int dd=1, int mm=1, int yy=1900){ SetDate(dd,mm,yy);}
+SetDate(int ng, int th, int nam)
+{if(hople(ng,th,nam)){d=ng; m=th; y=nam;} else {d=1; m=1; y=1900;}}
+int nhuan(int n) {if((n%400==0) || ((n%4==0)&&(n%100!=0))) return 1; else return 0;}
+int cuoithang()
+{if((m==2) && nhuan(y)) return d==29;
+else return d==ngaytrongthang[m];}
+long sott()
+{
+long n=y-1900;
+n=n*365+n/4-n/100+n/400-nhuan(y);
+for(int i=1;i<m;i++) n+=ngaytrongthang[i]; n+=d;
+if (m>2) n+=nhuan(y);
+return n;}
+int hople(int d1, int m1, int y1)
+{ int h1=(m1>0) && (m1<13); int h2=y1>=1900;
+if(h1&&h2&&(((d1>0)&&(d1<=ngaytrongthang[m1]))||((m1==2)&&(d1==29)&&nhuan(y1))))
+return 1;
+else return 0;}
+int ngaytuan()
+{
+Date T7(17,10,2020);
+long t=sott()-T7.sott();
+int thu=t%7; if(thu<0)thu+=7;
+return thu;}
+Date operator++()
+{ if (cuoithang()&&(m==12)) { d=1; m=1; ++y;}
+else if(cuoithang()){d=1; ++m;} else ++d;
+return*this;}
+Date operator--()
+{ if((d==1)&&(m==1)) {d=31; m=12; --y;}
+else if(d==1) { --m; if((m==2)&&nhuan(y))d=29; else d=ngaytrongthang[m];} else --d;
+return*this;}
+Date operator ++(int) 
+{ Date D=*this;
+if(cuoithang()&&(m=12)) {d=1; m=1; ++y;}
+else if(cuoithang()) { d=1; ++m;} else ++d;
+return D;}
+Date operator --(int) 
+{ Date D=*this;
+if((d==1)&&(m==1)) {d=31;m=12;--y;}
+else if(d==1) {--m; if((m==2)&&nhuan(y))d=29; else d=ngaytrongthang[m];} else --d;
+return D;}
+
+int getd(){return d;}
+int getm(){return m;}
+int gety(){return y;}
+friend istream &operator>>(istream &Input, Date &P)
+{ int ng, th, nam;
+cout<<"Nhap ngay:"; Input>>ng;
+cout<<"Nhap thang:"; Input>>th;
+cout<<"Nhap nam:"; Input>>nam;
+Date Q(ng,th,nam); P=Q;
+return Input;}
+friend ostream &operator <<(ostream &Out, Date &P)
+{Out<<tenthu[P.ngaytuan()]<<","<<tenthang[P.m-1]<<" "<<P.d<<" "<<P.y<<"\n";
+return Out;}
+};
+class DateKT: Date
+{ int theky(){return gety()/100+1;}
+public:
+DateKT(int dd=1,int mm=1,int yy=1900): Date(dd,mm,yy) {}
+long operator-(DateKT X) {return sott()-X.sott();}
+DateKT operator +(int n)
+{DateKT P=*this;
+for(int i=0; i<n; i++) P++;
+return P;}
+int operator>(DateKT X) {return sott()>X.sott();}
+friend istream &operator>>(istream &Input, DateKT &P)
+{
+int ng, th, nam;
+cout<<"Nhap ngay:"; Input>>ng;
+cout<<"Nhap thang:"; Input>>th;
+cout<<"Nhap nam:"; Input>>nam;
+DateKT Q(ng,th,nam); P=Q;
+return Input;}
+friend ostream &operator<<(ostream &Out, DateKT &P)
+{ int ng=P.getd(), th=P.getm(), nam=P.gety();
+Out<<(ng<10?"0":"")<<ng<<"/"<<(th<10?"0":"")<<th<<"/"<<nam<<"TK:"<<P.theky()<<"\n";
+return Out;}
+};
+int main()
+{Date D;
+cout<<"Nhap date D:\n"; cin>>D;
+cout<<"D da nhap:"; cout<<D;
+cout<<"\n++D:"; ++D; cout<<D;
+cout<<"\n--D:";--D; cout<<D;
+cout<<"\nD++:";D++; cout<<D;
+cout<<"\nD--:";D--; cout<<D;
+DateKT Q,R;
+cout<<"Nhap dateKT Q:\n"; cin>>Q;
+cout<<"Q da nhap:"; cout<<Q;
+cout<<"Nhap dateKT R:\n"; cin>>R;
+cout<<"R da nhap:"; cout<<R;
+cout<<"\nQ-R:"; cout<<Q-R;
+cout<<"\nQ+100:"; Q=Q+100;cout<<Q;
+if(Q>R) cout<<"Q>R"; else cout<<"Q<=R";
+DateKT a[10]; int n;
+cout<<"\nSo doi tuong can nhap n<="<<10<<"; n="; cin>>n;
+cout<<"Nhap cac doi tuong KT:"<<endl;
+for(int i=0; i<n;i++)
+{cout<<"a["<<i<<"]=\n";cin>>a[i];}
+cout<<"Cac doi tuong KT da nhap:"<<endl;
+for(int i=0;i<n;i++)
+cout<<"a["<<i<<"]="<<a[i]<<endl;
+int max=a[0]-a[1]; int id=0, ic=1;
+for(int i=0; i<n-1;i++)
+for(int j=i+1;j<n;j++)
+{ int c=a[i]-a[j];
+if(max<c){ max=c; id=i; ic=j;}}
+cout<<"Chenh max="<<max<<endl;
+cout<<"Thu lai: a["<<id<<"]-a["<<ic<<"]="<<(a[id]-a[ic]);
+return 0;
+}
+
+/*
+	Tao lop DATE,co:
+		+Thanh phan DL private: day,month,year
+		+ Ham Sott cho STT cua Date 
+		+ Ham thiet lap vs cac tham so mac dinh, 
+		+ Ham chong tt ++
+		+ Ham chong tt --
+	Tao lop DateKT ke thua DATE, co:
+		+ tp private: Ham TheKy xd the ky cua DateKT
+		+ Ham chong tt -
+		+ Ham chong tt +
+		+ Ham chong tt >
+		>>
+		<<
+	Ham main: n doi tuong DateKT(n>2)
+		+Nhap ,xuat cac doi tuong
+		+Sap xep cac doi tuong tang dan, xuat
+		+Tim so ngay chenh lech lon nhat giua 2 doi tuong trong n doi tuong
+		+ Kiem chung lai = +
+*/
